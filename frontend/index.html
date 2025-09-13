@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wolyt Test Dashboard</title>
+  <style>
+    :root{
+      --bg:#f8fafc; --panel:#ffffff; --ink:#0f172a; --muted:#475569;
+      --primary:#2563eb; --green:#10b981; --violet:#7c3aed; --amber:#f59e0b; --red:#ef4444; --ring:#e5e7eb;
+    }
+    *{box-sizing:border-box}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,Arial,sans-serif;
+      margin:0; padding:32px; background:var(--bg); color:var(--ink);
+    }
+    h1{margin:0 0 8px; font-size:28px}
+    p.caption{margin:0 0 24px; color:var(--muted)}
+    .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:20px}
+    .card{
+      grid-column:span 12; background:var(--panel); border:1px solid var(--ring);
+      border-radius:14px; padding:18px; box-shadow:0 2px 8px rgba(2,6,23,.05);
+    }
+    @media(min-width:980px){
+      .span-6{grid-column:span 6}
+      .span-4{grid-column:span 4}
+      .span-8{grid-column:span 8}
+    }
+    .card h2{margin:0 0 12px; font-size:18px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px}
+    input,select{
+      padding:10px 12px; border:1px solid var(--ring); border-radius:10px; font-size:14px;
+      outline:none; min-width:180px; background:#fff;
+    }
+    input:focus{border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+    button{
+      border:0; padding:10px 14px; border-radius:10px; font-weight:600; color:#fff; cursor:pointer
+    }
+    .btn{background:var(--primary)}
+    .btn.violet{background:var(--violet)}
+    .btn.green{background:var(--green)}
+    .btn.amber{background:var(--amber)}
+    .btn.red{background:var(--red)}
+    .btn.ghost{background:#e2e8f0; color:var(--ink)}
+    .inline-note{font-size:12px; color:var(--muted)}
+    pre{
+      margin:10px 0 0; background:#0b1220; color:#d1e3ff; padding:14px; border-radius:12px;
+      font-size:13px; line-height:1.45; overflow:auto; max-height:340px;
+    }
+    .badge{display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:6px 8px;
+      border-radius:999px; background:#eef2ff; color:#3730a3; border:1px solid #e0e7ff}
+    .row .grow{flex:1}
+    .toolbar{display:flex; gap:10px; align-items:center}
+    .hr{height:1px; background:var(--ring); margin:10px 0}
+  </style>
+</head>
+<body>
+  <h1>🚀 Wolyt Test Dashboard</h1>
+  <p class="caption">End-to-end checks for Signup, Login (JWT), Trust Score, Balance, History and Transactions.</p>
+
+  <div class="grid">
+
+    <!-- SIGNUP -->
+    <section class="card span-6">
+      <h2>🔑 Signup</h2>
+      <div class="row">
+        <input id="su_name" placeholder="Name" value="Alice"/>
+        <input id="su_email" class="grow" placeholder="Email" value="alice@wolyt.com"/>
+        <input id="su_password" placeholder="Password" value="test" type="password"/>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="btn_signup">Signup</button>
+        <button class="btn green" id="btn_signup_rand">Signup (random email)</button>
+        <span class="inline-note">Use random to avoid 409 email conflicts</span>
+      </div>
+      <pre id="out_signup">…waiting</pre>
+    </section>
+
+    <!-- LOGIN -->
+    <section class="card span-6">
+      <h2>🔐 Login (JWT)</h2>
+      <div class="row">
+        <input id="li_email" class="grow" placeholder="Email" value="alice@wolyt.com"/>
+        <input id="li_password" placeholder="Password" value="test" type="password"/>
+      </div>
+      <div class="toolbar">
+        <button class="btn violet" id="btn_login">Login & store token</button>
+        <button class="btn ghost" id="btn_logout">Clear token</button>
+        <span class="badge" id="badge_auth">No token</span>
+      </div>
+      <pre id="out_login">…waiting</pre>
+    </section>
+
+    <!-- TRUST SCORE -->
+    <section class="card span-4">
+      <h2>📊 Trust Score</h2>
+      <div class="row">
+        <input id="ts_user" type="number" min="1" value="1" placeholder="User ID"/>
+        <button class="btn" id="btn_trust">Get Trust Score</button>
+      </div>
+      <pre id="out_trust">…waiting</pre>
+    </section>
+
+    <!-- BALANCE -->
+    <section class="card span-4">
+      <h2>💰 Balance (JWT)</h2>
+      <div class="row">
+        <button class="btn violet" id="btn_balance">Get Balance</button>
+      </div>
+      <pre id="out_balance">…waiting</pre>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="card span-4">
+      <h2>🧾 History (JWT)</h2>
+      <div class="row">
+        <button class="btn amber" id="btn_history">Get History</button>
+      </div>
+      <pre id="out_history">…waiting</pre>
+    </section>
+
+    <!-- TRANSACTION -->
+    <section class="card span-8">
+      <h2>💸 Send Transaction (JWT)</h2>
+      <div class="row">
+        <input id="tx_receiver" type="number" min="1" value="1" placeholder="Receiver Wallet ID"/>
+        <input id="tx_amount" type="number" min="0.01" step="0.01" value="5.00" placeholder="Amount"/>
+        <button class="btn green" id="btn_tx">Send</button>
+      </div>
+      <pre id="out_tx">…waiting</pre>
+      <div class="hr"></div>
+      <div class="inline-note">
+        Tip: After a successful transfer, call <b>Balance</b> and <b>History</b> again, then check <b>Trust Score</b> for the user.
+      </div>
+    </section>
+
+    <!-- CONSOLE -->
+    <section class="card span-4">
+      <h2>🧪 Console</h2>
+      <div class="row">
+        <button class="btn red" id="btn_clear">Clear all outputs</button>
+      </div>
+      <pre id="out_console">Console ready…</pre>
+    </section>
+
+  </div>
+
+  <script>
+    // ---------- STATE ----------
+    let token = localStorage.getItem("wolyt_token") || null;
+    updateAuthBadge();
+
+    // ---------- HELPERS ----------
+    function setText(id, obj){ document.getElementById(id).textContent = prettify(obj) }
+    function prettify(obj){ try { return typeof obj==='string' ? obj : JSON.stringify(obj, null, 2); } catch { return String(obj) } }
+    function log(msg){ const el = document.getElementById("out_console"); el.textContent += "\\n" + msg }
+
+    function withAuth(headers={}){
+      if(token){ headers["Authorization"] = `Bearer ${token}` }
+      return headers;
+    }
+
+    async function fetchJson(path, {method="GET", headers={}, body, auth=false}={}){
+      const opts = { method, headers: { ...headers }, body };
+      if(auth) opts.headers = withAuth(opts.headers);
+      const res = await fetch(path, opts);
+      let data;
+      try{ data = await res.json() } catch { data = {message:"(no JSON body)"} }
+      return {res, data};
+    }
+
+    function updateAuthBadge(){
+      const b = document.getElementById("badge_auth");
+      if(token){ b.textContent = "Token stored"; b.style.background="#dcfce7"; b.style.color="#065f46"; b.style.borderColor="#bbf7d0" }
+      else { b.textContent = "No token"; b.style.background="#eef2ff"; b.style.color="#3730a3"; b.style.borderColor="#e0e7ff" }
+    }
+
+    // ---------- SIGNUP ----------
+    document.getElementById("btn_signup").addEventListener("click", async () => {
+      const name = document.getElementById("su_name").value.trim();
+      const email = document.getElementById("su_email").value.trim();
+      const password = document.getElementById("su_password").value;
+
+      const {res, data} = await fetchJson("/auth/signup", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({name, email, password})
+      });
+      setText("out_signup", {status:res.status, data});
+      log(`Signup → ${res.status}`);
+    });
+
+    document.getElementById("btn_signup_rand").addEventListener("click", async () => {
+      const ts = Date.now();
+      document.getElementById("su_email").value = `alice+${ts}@wolyt.com`;
+      document.getElementById("btn_signup").click();
+    });
+
+    // ---------- LOGIN / LOGOUT ----------
+    document.getElementById("btn_login").addEventListener("click", async () => {
+      const email = document.getElementById("li_email").value.trim();
+      const password = document.getElementById("li_password").value;
+
+      const {res, data} = await fetchJson("/auth/login", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({email, password})
+      });
+      setText("out_login", {status:res.status, data});
+      if(res.ok && data.access_token){
+        token = data.access_token;
+        localStorage.setItem("wolyt_token", token);
+        updateAuthBadge();
+        log("Login success: token stored");
+      } else {
+        log("Login failed");
+      }
+    });
+
+    document.getElementById("btn_logout").addEventListener("click", () => {
+      token = null; localStorage.removeItem("wolyt_token"); updateAuthBadge(); log("Token cleared");
+    });
+
+    // ---------- TRUST SCORE ----------
+    document.getElementById("btn_trust").addEventListener("click", async () => {
+      const uid = Number(document.getElementById("ts_user").value || "1");
+      const {res, data} = await fetchJson(`/trust-score/${uid}`);
+      setText("out_trust", {status:res.status, data});
+      log(`Trust score (user ${uid}) → ${res.status}`);
+    });
+
+    // ---------- BALANCE ----------
+    document.getElementById("btn_balance").addEventListener("click", async () => {
+      const {res, data} = await fetchJson("/balance", {auth:true});
+      setText("out_balance", {status:res.status, data});
+      log(`Balance → ${res.status}`);
+    });
+
+    // ---------- HISTORY ----------
+    document.getElementById("btn_history").addEventListener("click", async () => {
+      const {res, data} = await fetchJson("/history", {auth:true});
+      setText("out_history", {status:res.status, data});
+      log(`History → ${res.status}`);
+    });
+
+    // ---------- TRANSACTION ----------
+    document.getElementById("btn_tx").addEventListener("click", async () => {
+      const receiver_wallet_id = Number(document.getElementById("tx_receiver").value);
+      const amount = Number(document.getElementById("tx_amount").value);
+      const {res, data} = await fetchJson("/transaction", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ receiver_wallet_id, amount }),
+        auth:true
+      });
+      setText("out_tx", {status:res.status, data});
+      log(`Transaction → ${res.status}`);
+    });
+
+    // ---------- UTIL ----------
+    document.getElementById("btn_clear").addEventListener("click", () => {
+      ["out_signup","out_login","out_trust","out_balance","out_history","out_tx","out_console"].forEach(id=>{
+        document.getElementById(id).textContent = "…cleared";
+      });
+      log("Console cleared");
+    });
+  </script>
+</body>
+</html>
