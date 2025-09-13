@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Wolyt Test</h1>
+
+    <form id="signupForm" style="margin-bottom:1rem">
+      <input id="name" placeholder="Name" value="Alice" />
+      <input id="email" placeholder="Email" value="alice@wolyt.com" />
+      <input id="password" placeholder="Password" value="test" type="password" />
+      <button type="submit">Signup</button>
+      <button type="button" id="signupRandom">Signup (random email)</button>
+    </form>
+
+    <pre id="output"></pre>
+
+    <script>
+      async function doSignup(emailOverride) {
+        const name = document.getElementById("name").value.trim();
+        const email = (emailOverride || document.getElementById("email").value).trim();
+        const password = document.getElementById("password").value;
+
+        const res = await fetch("/auth/signup", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        // Nice status-aware output
+        document.getElementById("output").textContent =
+          JSON.stringify({ status: res.status, data }, null, 2);
+      }
+
+      // normal submit
+      document.getElementById("signupForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        doSignup();
+      });
+
+      // one-click random email to avoid 409s in dev
+      document.getElementById("signupRandom").addEventListener("click", () => {
+        const ts = Date.now();
+        const email = `alice+${ts}@wolyt.com`;
+        document.getElementById("email").value = email;
+        doSignup(email);
+      });
+    </script>
+  </body>
+</html>
